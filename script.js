@@ -28,36 +28,40 @@ const gameboard = (function () {
     let gameBoardDiv = document.querySelector(".gameboard");
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        let cell = document.createElement("div");
-        let pos = document.createElement("div");
-        let top = document.createElement("div");
-        let id = document.createElement("div");
-        let left = document.createElement("div");
-        let right = document.createElement("div");
-        let bottom = document.createElement("div");
+        // prints only occupied cells
+        if (board[i][j].card != null) {
+          let cell = document.createElement("div");
+          let pos = document.createElement("div");
+          let top = document.createElement("div");
+          let id = document.createElement("div");
+          let left = document.createElement("div");
+          let right = document.createElement("div");
+          let bottom = document.createElement("div");
 
-        pos.textContent = board[i][j].position;
-        top.textContent = board[i][j].card.top;
-        id.textContent = board[i][j].card.id;
-        left.textContent = board[i][j].card.left;
-        right.textContent = board[i][j].card.right;
-        bottom.textContent = board[i][j].card.bottom;
+          pos.textContent = board[i][j].position;
+          top.textContent = board[i][j].card.top;
+          id.textContent = board[i][j].card.id;
+          left.textContent = board[i][j].card.left;
+          right.textContent = board[i][j].card.right;
+          bottom.textContent = board[i][j].card.bottom;
 
-        cell.setAttribute("class", "cell");
-        pos.setAttribute("class", "position");
-        top.setAttribute("class", "top");
-        id.setAttribute("class", "id");
-        left.setAttribute("class", "left");
-        right.setAttribute("class", "right");
-        bottom.setAttribute("class", "bottom");
+          cell.setAttribute("class", "cell");
+          cell.classList.add(board[i][j].card.owner.toLowerCase());
+          pos.setAttribute("class", "position");
+          top.setAttribute("class", "top");
+          id.setAttribute("class", "id");
+          left.setAttribute("class", "left");
+          right.setAttribute("class", "right");
+          bottom.setAttribute("class", "bottom");
 
-        cell.appendChild(pos);
-        cell.appendChild(top);
-        cell.appendChild(id);
-        cell.appendChild(left);
-        cell.appendChild(right);
-        cell.appendChild(bottom);
-        gameBoardDiv.appendChild(cell);
+          cell.appendChild(pos);
+          cell.appendChild(top);
+          cell.appendChild(id);
+          cell.appendChild(left);
+          cell.appendChild(right);
+          cell.appendChild(bottom);
+          gameBoardDiv.appendChild(cell);
+        }
       }
     }
   };
@@ -99,9 +103,9 @@ const deck = (function () {
   let board = gameboard.getBoard();
 
   function setStat() {
-    // sets a number from 0 to 10
+    // sets a number from 1 to 10
     let stat = Math.floor(Math.random() * 11) % 11;
-    return stat;
+    return stat == 0 ? 1 : stat;
   }
 
   const initDecks = function () {
@@ -123,18 +127,22 @@ const deck = (function () {
 
   //for testing purposes only
   function fullfillBoard() {
-    let rowLenght = 3;
-    let columnLength = 3;
+    board[0][0].card = playerDeck[0];
+    board[0][1].card = opponentDeck[1];
+    board[1][0].card = opponentDeck[0];
 
-    for (let i = 0; i < rowLenght; i++) {
-      for (let j = 0; j < columnLength; j++) {
-        let d = Math.floor(Math.random() * 10) % 2; // random deck
-        let c = Math.floor(Math.random() * 10) % 5; // random card
-        let randomCard = decks[d][c];
+    // let rowLenght = 3;
+    // let columnLength = 3;
 
-        board[i][j].card = randomCard;
-      }
-    }
+    // for (let i = 0; i < rowLenght; i++) {
+    //   for (let j = 0; j < columnLength; j++) {
+    //     let d = Math.floor(Math.random() * 10) % 2; // random deck
+    //     let c = Math.floor(Math.random() * 10) % 5; // random card
+    //     let randomCard = decks[d][c];
+
+    //     board[i][j].card = randomCard;
+    //   }
+    // }
     console.log("Board fullfilled");
     console.log(board);
   }
@@ -155,8 +163,13 @@ const game = (function () {
     return board[row][column].card != null;
   }
 
-  function getDefendersCell(row, column) {
-    positionIndex = row * 3 + column;
+  function getDefendersCell(positionIndex) {
+    let row = Math.floor(positionIndex / 3);
+    let column = positionIndex % 3;
+    defenders = [];
+
+    // need to implement condition to avoid getting friendly card
+    // FIX!!
 
     switch (positionIndex) {
       case 0:
@@ -250,49 +263,90 @@ const game = (function () {
         break;
 
       case 8:
-        if (isOccupied(row, column - 1)) {
-          defenders.push(board[row][column - 1]);
-        }
         if (isOccupied(row - 1, column)) {
           defenders.push(board[row - 1][column]);
         }
+        if (isOccupied(row, column - 1)) {
+          defenders.push(board[row][column - 1]);
+        }
+
         break;
     }
 
     return defenders;
   }
 
-  const getAttacker = function (cardIndex) {
+  const getAttacker = function () {
+    let cardIndex = prompt("Select Attacker card: 0 - 4");
     attacker =
       activePlayer == players.getPlayer()
         ? deck.decks[0][cardIndex]
         : deck.decks[1][cardIndex];
+    console.log("Attacker set to: ", attacker);
   };
 
-  const getBattleCell = function (row, column) {
+  const selectBattleCell = function () {
+    let row = prompt("Select Row (0 - 2)");
+    let column = prompt("Select Column (0 - 2)");
+
     if (isOccupied(row, column) == false) {
       battleCell = board[row][column];
+      console.log("Battle Cell set to: ", battleCell);
     } else {
       console.log("Position already taken");
     }
   };
 
-  const playCard = function () {
-    attacker = getAttacker(cardIndex);
-    let landingCell = activePlayer(row, column);
-    let defenders = getDefendersCell(row, column);
-    // I have to find the relative position between attacker and defender so I can compare the respective stats
+  const playBattle = function () {
+    getAttacker();
+    selectBattleCell();
+    getDefendersCell(battleCell.position);
 
-    // defenders.forEach((defender) => {
+    let attackerPosition = battleCell.position;
+    defenders.forEach((defenderCell) => {
+      let defender = defenderCell.card;
 
-    // })
+      switch (defenderCell.position) {
+        case attackerPosition - 3:
+          console.log("Fighting on TOP");
+          if (attacker.top > defender.bottom) {
+            defender.owner = activePlayer.name;
+            console.log("Fight won against defender on TOP");
+          }
+          break;
+        case attackerPosition + 1:
+          console.log("Fighting on RIGHT");
+          if (attacker.right > defender.left) {
+            defender.owner = activePlayer.name;
+            console.log("Fight won against defender on RIGHT");
+          }
+          break;
+        case attackerPosition + 3:
+          console.log("Fighting on BOTTOM");
+          if (attacker.bottom > defender.top) {
+            defender.owner = activePlayer.name;
+            console.log("Fight won against defender on BOTTOM");
+          }
+          break;
+        case attackerPosition - 1:
+          console.log("Fighting on LEFT");
+          if (attacker.left > defender.right) {
+            defender.owner = activePlayer.name;
+            console.log("Fight won against defender on LEFT");
+          }
+          break;
+      }
+    });
   };
 
   return {
+    playBattle,
     isOccupied,
     getDefendersCell,
     getAttacker,
-    getBattleCell,
+    selectBattleCell,
     activePlayer,
+    battleCell,
+    defenders,
   };
 })();
