@@ -1,3 +1,65 @@
 body {
   background-color: slategray;
+  font-size: 30px;
+}
+
+.gameboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* gap: 10px; */
+
+  height: 50vh;
+  width: 50vw;
+}
+
+.gameboard > .cell {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+
+  height: 200px;
+  width: 200px;
+
+  border: 2px solid wheat;
+}
+
+.cell > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cell > .position {
+  font-weight: 700;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 5px;
+}
+
+.cell > .id {
+  color: darkred;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 5px;
+}
+
+.cell > .left {
+  grid-row-start: 2;
+  grid-row-end: 3;
+  grid-column-start: 1;
+  grid-column-end: 2;
+}
+
+.cell > .right {
+  grid-row-start: 2;
+  grid-row-end: 3;
+  grid-column-start: 3;
+  grid-column-end: 4;
+}
+
+.cell > .bottom {
+  grid-row-start: 3;
+  grid-row-end: 4;
+  grid-column-start: 2;
+  grid-column-end: 3;
 }
