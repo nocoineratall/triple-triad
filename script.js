@@ -1,25 +1,23 @@
 const gameboard = (function () {
   let board = [];
   const rows = 3;
-  const columns = rows;
+  const columns = rows; //do I need it?
 
-  //parameter _card is passed for testing purposes only
-  const initBoard = function (_card) {
+  const initBoard = function () {
     board = [];
-    let cell = {
-      card: _card,
-      empty: true,
-    };
-
-    let column = [];
-    for (let j = 0; j < 3; j++) {
-      column.push(cell);
-    }
 
     for (let i = 0; i < 3; i++) {
+      let column = [];
+      for (let j = 0; j < 3; j++) {
+        let cell = {
+          card: null,
+          position: i * 3 + j,
+        };
+        column.push(cell);
+      }
       board.push(column);
     }
-    return "board initialized";
+    console.log("Board initialized empty");
   };
 
   initBoard();
@@ -53,11 +51,12 @@ const players = (function () {
   return { toggleActivePlayer, getActivePlayer, getPlayer, getOpponent };
 })();
 
-const decks = (function () {
+const deck = (function () {
   const playerDeck = [];
   const opponentDeck = [];
   const decks = [playerDeck, opponentDeck];
   const deckSize = 5;
+  let board = gameboard.getBoard();
 
   function setStat() {
     // sets a number from 0 to 10
@@ -83,34 +82,133 @@ const decks = (function () {
   initDecks();
 
   //for testing purposes only
-  function placeCard() {
-    gameboard.initBoard(playerDeck[0]);
-  }
+  function fullfillBoard() {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        let d = Math.floor(Math.random() * 10) % 2; // random deck
+        let c = Math.floor(Math.random() * 10) % 5; // random card
+        let randomCard = decks[d][c];
 
-  return { decks, placeCard };
+        board[i][j].card = randomCard;
+      }
+    }
+    console.log("Board fullfilled");
+  }
+  fullfillBoard();
+
+  return { decks };
 })();
 
 const game = (function () {
   board = gameboard.getBoard();
 
   function checkAvailability(row, column) {
-    return board[column][row].empty == true;
+    return board[row][column].card == null;
   }
 
   function getDefenders(row, column) {
     let defenders = [];
+    positionIndex = row * 3 + column;
 
-    if (checkAvailability(row + 1, column) == true) {
-      defenders.push(board[row + 1][column].card);
-    }
-    if (checkAvailability(row - 1, column) == true) {
-      defenders.push(board[row - 1][column].card);
-    }
-    if (checkAvailability(row, column + 1) == true) {
-      defenders.push(board[row][column + 1].card);
-    }
-    if (checkAvailability(row, column - 1) == true) {
-      defenders.push(board[row][column - 1].card);
+    switch (positionIndex) {
+      case 0:
+        if (checkAvailability(row, column + 1) == false) {
+          defenders.push(board[row][column + 1].card);
+        }
+        if (checkAvailability(row + 1, column) == false) {
+          defenders.push(board[row + 1][column].card);
+        }
+        break;
+
+      case 1:
+        if (checkAvailability(row, column + 1) == false) {
+          defenders.push(board[row][column + 1].card);
+        }
+        if (checkAvailability(row + 1, column) == false) {
+          defenders.push(board[row + 1][column].card);
+        }
+        if (checkAvailability(row, column - 1) == false) {
+          defenders.push(board[row][column - 1].card);
+        }
+        break;
+
+      case 2:
+        if (checkAvailability(row + 1, column) == false) {
+          defenders.push(board[row + 1][column].card);
+        }
+        if (checkAvailability(row, column - 1) == false) {
+          defenders.push(board[row][column - 1].card);
+        }
+        break;
+
+      case 3:
+        if (checkAvailability(row - 1, column) == false) {
+          defenders.push(board[row - 1][column].card);
+        }
+        if (checkAvailability(row, column + 1) == false) {
+          defenders.push(board[row][column + 1].card);
+        }
+        if (checkAvailability(row + 1, column) == false) {
+          defenders.push(board[row + 1][column].card);
+        }
+        break;
+
+      case 4:
+        if (checkAvailability(row - 1, column) == false) {
+          defenders.push(board[row - 1][column].card);
+        }
+        if (checkAvailability(row, column + 1) == false) {
+          defenders.push(board[row][column + 1].card);
+        }
+        if (checkAvailability(row + 1, column) == false) {
+          defenders.push(board[row + 1][column].card);
+        }
+        if (checkAvailability(row, column - 1) == false) {
+          defenders.push(board[row][column - 1].card);
+        }
+        break;
+
+      case 5:
+        if (checkAvailability(row - 1, column) == false) {
+          defenders.push(board[row - 1][column].card);
+        }
+        if (checkAvailability(row + 1, column) == false) {
+          defenders.push(board[row + 1][column].card);
+        }
+        if (checkAvailability(row, column - 1) == false) {
+          defenders.push(board[row][column - 1].card);
+        }
+        break;
+
+      case 6:
+        if (checkAvailability(row - 1, column) == false) {
+          defenders.push(board[row - 1][column].card);
+        }
+        if (checkAvailability(row, column + 1) == false) {
+          defenders.push(board[row][column + 1].card);
+        }
+        break;
+
+      case 7:
+        if (checkAvailability(row - 1, column) == false) {
+          defenders.push(board[row - 1][column].card);
+        }
+        if (checkAvailability(row, column + 1) == false) {
+          defenders.push(board[row][column + 1].card);
+        }
+        if (checkAvailability(row, column - 1) == false) {
+          defenders.push(board[row][column - 1].card);
+        }
+        break;
+
+      case 8:
+        if (checkAvailability(row, column - 1) == false) {
+          defenders.push(board[row][column - 1].card);
+        }
+        if (checkAvailability(row - 1, column) == false) {
+          defenders.push(board[row - 1][column].card);
+        }
+        break;
     }
 
     return defenders;
