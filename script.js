@@ -102,8 +102,8 @@ const deck = (function () {
 const game = (function () {
   board = gameboard.getBoard();
 
-  function checkAvailability(row, column) {
-    return board[row][column].card == null;
+  function isOccupied(row, column) {
+    return board[row][column].card != null;
   }
 
   function getDefenders(row, column) {
@@ -112,100 +112,100 @@ const game = (function () {
 
     switch (positionIndex) {
       case 0:
-        if (checkAvailability(row, column + 1) == false) {
+        if (isOccupied(row, column + 1)) {
           defenders.push(board[row][column + 1].card);
         }
-        if (checkAvailability(row + 1, column) == false) {
+        if (isOccupied(row + 1, column)) {
           defenders.push(board[row + 1][column].card);
         }
         break;
 
       case 1:
-        if (checkAvailability(row, column + 1) == false) {
+        if (isOccupied(row, column + 1)) {
           defenders.push(board[row][column + 1].card);
         }
-        if (checkAvailability(row + 1, column) == false) {
+        if (isOccupied(row + 1, column)) {
           defenders.push(board[row + 1][column].card);
         }
-        if (checkAvailability(row, column - 1) == false) {
+        if (isOccupied(row, column - 1)) {
           defenders.push(board[row][column - 1].card);
         }
         break;
 
       case 2:
-        if (checkAvailability(row + 1, column) == false) {
+        if (isOccupied(row + 1, column)) {
           defenders.push(board[row + 1][column].card);
         }
-        if (checkAvailability(row, column - 1) == false) {
+        if (isOccupied(row, column - 1)) {
           defenders.push(board[row][column - 1].card);
         }
         break;
 
       case 3:
-        if (checkAvailability(row - 1, column) == false) {
+        if (isOccupied(row - 1, column)) {
           defenders.push(board[row - 1][column].card);
         }
-        if (checkAvailability(row, column + 1) == false) {
+        if (isOccupied(row, column + 1)) {
           defenders.push(board[row][column + 1].card);
         }
-        if (checkAvailability(row + 1, column) == false) {
+        if (isOccupied(row + 1, column)) {
           defenders.push(board[row + 1][column].card);
         }
         break;
 
       case 4:
-        if (checkAvailability(row - 1, column) == false) {
+        if (isOccupied(row - 1, column)) {
           defenders.push(board[row - 1][column].card);
         }
-        if (checkAvailability(row, column + 1) == false) {
+        if (isOccupied(row, column + 1)) {
           defenders.push(board[row][column + 1].card);
         }
-        if (checkAvailability(row + 1, column) == false) {
+        if (isOccupied(row + 1, column)) {
           defenders.push(board[row + 1][column].card);
         }
-        if (checkAvailability(row, column - 1) == false) {
+        if (isOccupied(row, column - 1)) {
           defenders.push(board[row][column - 1].card);
         }
         break;
 
       case 5:
-        if (checkAvailability(row - 1, column) == false) {
+        if (isOccupied(row - 1, column)) {
           defenders.push(board[row - 1][column].card);
         }
-        if (checkAvailability(row + 1, column) == false) {
+        if (isOccupied(row + 1, column)) {
           defenders.push(board[row + 1][column].card);
         }
-        if (checkAvailability(row, column - 1) == false) {
+        if (isOccupied(row, column - 1)) {
           defenders.push(board[row][column - 1].card);
         }
         break;
 
       case 6:
-        if (checkAvailability(row - 1, column) == false) {
+        if (isOccupied(row - 1, column)) {
           defenders.push(board[row - 1][column].card);
         }
-        if (checkAvailability(row, column + 1) == false) {
+        if (isOccupied(row, column + 1)) {
           defenders.push(board[row][column + 1].card);
         }
         break;
 
       case 7:
-        if (checkAvailability(row - 1, column) == false) {
+        if (isOccupied(row - 1, column)) {
           defenders.push(board[row - 1][column].card);
         }
-        if (checkAvailability(row, column + 1) == false) {
+        if (isOccupied(row, column + 1)) {
           defenders.push(board[row][column + 1].card);
         }
-        if (checkAvailability(row, column - 1) == false) {
+        if (isOccupied(row, column - 1)) {
           defenders.push(board[row][column - 1].card);
         }
         break;
 
       case 8:
-        if (checkAvailability(row, column - 1) == false) {
+        if (isOccupied(row, column - 1)) {
           defenders.push(board[row][column - 1].card);
         }
-        if (checkAvailability(row - 1, column) == false) {
+        if (isOccupied(row - 1, column)) {
           defenders.push(board[row - 1][column].card);
         }
         break;
@@ -214,5 +214,5 @@ const game = (function () {
     return defenders;
   }
 
-  return { checkAvailability, getDefenders };
+  return { isOccupied, getDefenders };
 })();
