@@ -6,21 +6,20 @@ body {
 .gameboard {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  /* gap: 10px; */
-
-  height: 50vh;
-  width: 50vw;
+  grid-template-rows: repeat(3, 1fr);
+  width: 600px;
+  border: 2px solid black;
 }
 
 .gameboard > .cell {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
+  border: 2px solid black;
 
   height: 200px;
-  width: 200px;
 
-  border: 2px solid wheat;
+  font-size: 3rem;
 }
 
 .cell > div {
@@ -30,6 +29,7 @@ body {
 }
 
 .cell > .position {
+  font-size: 1.5rem;
   font-weight: 700;
   justify-content: flex-start;
   align-items: flex-start;
@@ -37,7 +37,8 @@ body {
 }
 
 .cell > .id {
-  color: darkred;
+  font-size: 1.5rem;
+  color: rgb(35, 68, 255);
   justify-content: flex-end;
   align-items: flex-start;
   padding: 5px;
@@ -62,4 +63,12 @@ body {
   grid-row-end: 4;
   grid-column-start: 2;
   grid-column-end: 3;
+}
+
+.gameboard > .player {
+  background-color: rgb(202, 252, 235);
+}
+
+.gameboard > .opponent {
+  background-color: rgb(255, 216, 216);
 }
