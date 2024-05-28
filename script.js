@@ -18,57 +18,61 @@ const gameboard = (function () {
       board.push(column);
     }
     console.log("Board initialized empty");
+    console.log(board);
   };
 
   initBoard();
 
+  function positionTo2D(position) {
+    let row = Math.floor(position / 3);
+    let column = position % 3;
+    return { row, column };
+  }
+
   // for testing only - helps visualize the board
   // move into DOM controller when finished testing
-  const printBoard = function () {
-    let gameBoardDiv = document.querySelector(".gameboard");
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        // prints only occupied cells
-        if (board[i][j].card != null) {
-          let cell = document.createElement("div");
-          let pos = document.createElement("div");
-          let top = document.createElement("div");
-          let id = document.createElement("div");
-          let left = document.createElement("div");
-          let right = document.createElement("div");
-          let bottom = document.createElement("div");
+  const printCard = function (card, position) {
+    let r = positionTo2D(position).row;
+    let c = positionTo2D(position).column;
 
-          pos.textContent = board[i][j].position;
-          top.textContent = board[i][j].card.top;
-          id.textContent = board[i][j].card.id;
-          left.textContent = board[i][j].card.left;
-          right.textContent = board[i][j].card.right;
-          bottom.textContent = board[i][j].card.bottom;
+    let cellDiv = document.querySelector(`.position-${position}`);
+    let cardDiv = document.createElement("div");
 
-          cell.setAttribute("class", "cell");
-          cell.classList.add(board[i][j].card.owner.toLowerCase());
-          pos.setAttribute("class", "position");
-          top.setAttribute("class", "top");
-          id.setAttribute("class", "id");
-          left.setAttribute("class", "left");
-          right.setAttribute("class", "right");
-          bottom.setAttribute("class", "bottom");
+    let pos = document.createElement("div");
+    let top = document.createElement("div");
+    let id = document.createElement("div");
+    let left = document.createElement("div");
+    let right = document.createElement("div");
+    let bottom = document.createElement("div");
 
-          cell.appendChild(pos);
-          cell.appendChild(top);
-          cell.appendChild(id);
-          cell.appendChild(left);
-          cell.appendChild(right);
-          cell.appendChild(bottom);
-          gameBoardDiv.appendChild(cell);
-        }
-      }
-    }
+    pos.textContent = position;
+    top.textContent = card.top;
+    id.textContent = card.id;
+    left.textContent = card.left;
+    right.textContent = card.right;
+    bottom.textContent = card.bottom;
+
+    cardDiv.classList.add("card");
+    cardDiv.classList.add(card.owner.toLowerCase());
+    pos.classList.add("position");
+    top.classList.add("top");
+    id.classList.add("id");
+    left.classList.add("left");
+    right.classList.add("right");
+    bottom.classList.add("bottom");
+
+    cardDiv.appendChild(pos);
+    cardDiv.appendChild(top);
+    cardDiv.appendChild(id);
+    cardDiv.appendChild(left);
+    cardDiv.appendChild(right);
+    cardDiv.appendChild(bottom);
+    cellDiv.appendChild(cardDiv);
   };
 
   const getBoard = () => board;
 
-  return { getBoard, initBoard, printBoard };
+  return { getBoard, initBoard, printCard };
 })();
 
 const players = (function () {
@@ -86,6 +90,7 @@ const players = (function () {
 
   const toggleActivePlayer = function () {
     activePlayer = activePlayer == player ? opponent : player;
+    return activePlayer;
   };
 
   const getActivePlayer = () => activePlayer;
@@ -146,8 +151,7 @@ const deck = (function () {
     console.log("Board fullfilled");
     console.log(board);
   }
-  fullfillBoard();
-  gameboard.printBoard();
+  // fullfillBoard();
 
   return { decks };
 })();
@@ -161,6 +165,14 @@ const game = (function () {
 
   function isOccupied(row, column) {
     return board[row][column].card != null;
+  }
+
+  function placeCard(card, position) {
+    let row = Math.floor(position / 3);
+    let column = position % 3;
+    board[row][column].card = card;
+
+    gameboard.printCard(card, position);
   }
 
   function getDefendersCell(positionIndex) {
@@ -289,7 +301,7 @@ const game = (function () {
     let row = prompt("Select Row (0 - 2)");
     let column = prompt("Select Column (0 - 2)");
 
-    if (isOccupied(row, column) == false) {
+    if (!isOccupied(row, column)) {
       battleCell = board[row][column];
       console.log("Battle Cell set to: ", battleCell);
     } else {
@@ -297,9 +309,21 @@ const game = (function () {
     }
   };
 
+  // implement function in playBattle
+  function setCardColor(card) {
+    if (card.owner == players.getPlayer.name) {
+      //assign class 'player'
+      // I need dom elements to manipulate attributes
+    }
+    if (card.owner == players.getOpponent.name) {
+      //assign class to 'opponent'
+    }
+  }
+
   const playBattle = function () {
     getAttacker();
     selectBattleCell();
+    placeCard(attacker, battleCell.position);
     getDefendersCell(battleCell.position);
 
     let attackerPosition = battleCell.position;
@@ -337,6 +361,7 @@ const game = (function () {
           break;
       }
     });
+    activePlayer = players.toggleActivePlayer();
   };
 
   return {
@@ -345,6 +370,7 @@ const game = (function () {
     getDefendersCell,
     getAttacker,
     selectBattleCell,
+    placeCard,
     activePlayer,
     battleCell,
     defenders,
