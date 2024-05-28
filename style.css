@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   background-color: slategray;
   font-size: 30px;
@@ -8,27 +14,30 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   width: 600px;
+  height: 600px;
   border: 2px solid black;
 }
 
 .gameboard > .cell {
+  border: 2px solid black;
+}
+
+.gameboard .card {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  border: 2px solid black;
 
   height: 200px;
-
   font-size: 3rem;
 }
 
-.cell > div {
+.card > div {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.cell > .position {
+.card > .position {
   font-size: 1.5rem;
   font-weight: 700;
   justify-content: flex-start;
@@ -36,7 +45,7 @@ body {
   padding: 5px;
 }
 
-.cell > .id {
+.card > .id {
   font-size: 1.5rem;
   color: rgb(35, 68, 255);
   justify-content: flex-end;
@@ -44,31 +53,31 @@ body {
   padding: 5px;
 }
 
-.cell > .left {
+.card > .left {
   grid-row-start: 2;
   grid-row-end: 3;
   grid-column-start: 1;
   grid-column-end: 2;
 }
 
-.cell > .right {
+.card > .right {
   grid-row-start: 2;
   grid-row-end: 3;
   grid-column-start: 3;
   grid-column-end: 4;
 }
 
-.cell > .bottom {
+.card > .bottom {
   grid-row-start: 3;
   grid-row-end: 4;
   grid-column-start: 2;
   grid-column-end: 3;
 }
 
-.gameboard > .player {
+.cell > .player {
   background-color: rgb(202, 252, 235);
 }
 
-.gameboard > .opponent {
+.cell > .opponent {
   background-color: rgb(255, 216, 216);
 }
