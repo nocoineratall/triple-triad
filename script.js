@@ -29,50 +29,9 @@ const gameboard = (function () {
     return { row, column };
   }
 
-  // for testing only - helps visualize the board
-  // move into DOM controller when finished testing
-  const printCard = function (card, position) {
-    let r = positionTo2D(position).row;
-    let c = positionTo2D(position).column;
-
-    let cellDiv = document.querySelector(`.position-${position}`);
-    let cardDiv = document.createElement("div");
-
-    let pos = document.createElement("div");
-    let top = document.createElement("div");
-    let id = document.createElement("div");
-    let left = document.createElement("div");
-    let right = document.createElement("div");
-    let bottom = document.createElement("div");
-
-    pos.textContent = position;
-    top.textContent = card.top;
-    id.textContent = card.id;
-    left.textContent = card.left;
-    right.textContent = card.right;
-    bottom.textContent = card.bottom;
-
-    cardDiv.classList.add("card");
-    cardDiv.classList.add(card.owner.toLowerCase());
-    pos.classList.add("position");
-    top.classList.add("top");
-    id.classList.add("id");
-    left.classList.add("left");
-    right.classList.add("right");
-    bottom.classList.add("bottom");
-
-    cardDiv.appendChild(pos);
-    cardDiv.appendChild(top);
-    cardDiv.appendChild(id);
-    cardDiv.appendChild(left);
-    cardDiv.appendChild(right);
-    cardDiv.appendChild(bottom);
-    cellDiv.appendChild(cardDiv);
-  };
-
   const getBoard = () => board;
 
-  return { getBoard, initBoard, printCard };
+  return { getBoard, initBoard, positionTo2D };
 })();
 
 const players = (function () {
@@ -105,10 +64,9 @@ const deck = (function () {
   const opponentDeck = [];
   const decks = [playerDeck, opponentDeck];
   const deckSize = 5;
-  let board = gameboard.getBoard();
 
   function setStat() {
-    // sets a number from 1 to 10
+    // sets a random number from 1 to 10
     let stat = Math.floor(Math.random() * 11) % 11;
     return stat == 0 ? 1 : stat;
   }
@@ -127,31 +85,11 @@ const deck = (function () {
         decks[i].push(card);
       }
     }
+    players.getPlayer().deck = playerDeck;
+    players.getOpponent().deck = opponentDeck;
+    console.log("Decks intialized");
   };
   initDecks();
-
-  //for testing purposes only
-  function fullfillBoard() {
-    board[0][0].card = playerDeck[0];
-    board[0][1].card = opponentDeck[1];
-    board[1][0].card = opponentDeck[0];
-
-    // let rowLenght = 3;
-    // let columnLength = 3;
-
-    // for (let i = 0; i < rowLenght; i++) {
-    //   for (let j = 0; j < columnLength; j++) {
-    //     let d = Math.floor(Math.random() * 10) % 2; // random deck
-    //     let c = Math.floor(Math.random() * 10) % 5; // random card
-    //     let randomCard = decks[d][c];
-
-    //     board[i][j].card = randomCard;
-    //   }
-    // }
-    console.log("Board fullfilled");
-    console.log(board);
-  }
-  // fullfillBoard();
 
   return { decks };
 })();
@@ -172,7 +110,7 @@ const game = (function () {
     let column = position % 3;
     board[row][column].card = card;
 
-    gameboard.printCard(card, position);
+    DOM.printCard(card, position);
   }
 
   function getDefendersCell(positionIndex) {
@@ -288,6 +226,7 @@ const game = (function () {
     return defenders;
   }
 
+  //riscrivere affinchè cardIndex sia recuperato dall'elemento del DOM cliccato
   const getAttacker = function () {
     let cardIndex = prompt("Select Attacker card: 0 - 4");
     attacker =
@@ -310,13 +249,12 @@ const game = (function () {
   };
 
   // implement function in playBattle
-  function setCardColor(card) {
-    if (card.owner == players.getPlayer.name) {
-      //assign class 'player'
-      // I need dom elements to manipulate attributes
+  function setCardColor(card, position) {
+    if (card.owner == players.getPlayer().name) {
+      DOM.cardDivs[position].setAttribute("class", "card player");
     }
-    if (card.owner == players.getOpponent.name) {
-      //assign class to 'opponent'
+    if (card.owner == players.getOpponent().name) {
+      DOM.cardDivs[position].setAttribute("class", "card opponent");
     }
   }
 
@@ -360,6 +298,8 @@ const game = (function () {
           }
           break;
       }
+      console.log(defenderCell.position);
+      setCardColor(defender, defenderCell.position);
     });
     activePlayer = players.toggleActivePlayer();
   };
@@ -371,8 +311,138 @@ const game = (function () {
     getAttacker,
     selectBattleCell,
     placeCard,
+    setCardColor,
     activePlayer,
     battleCell,
     defenders,
   };
+})();
+
+const eventHandler = (function () {
+  function addEventToDeck(element) {
+    element.addEventListener("click", game.getAttacker);
+  }
+
+  return { addEventToDeck };
+})();
+
+const DOM = (function () {
+  const cardDivs = [, , , , , , , ,];
+
+  const printCard = function (card, position) {
+    let r = gameboard.positionTo2D(position).row;
+    let c = gameboard.positionTo2D(position).column;
+
+    let cellDiv = document.querySelector(`.position-${position}`);
+    let cardDiv = document.createElement("div");
+    let pos = document.createElement("div");
+    let top = document.createElement("div");
+    let id = document.createElement("div");
+    let left = document.createElement("div");
+    let right = document.createElement("div");
+    let bottom = document.createElement("div");
+
+    pos.textContent = position;
+    top.textContent = card.top;
+    id.textContent = card.id;
+    left.textContent = card.left;
+    right.textContent = card.right;
+    bottom.textContent = card.bottom;
+
+    cardDiv.classList.add("card");
+    cardDiv.classList.add(card.owner.toLowerCase());
+    pos.classList.add("position");
+    top.classList.add("top");
+    id.classList.add("id");
+    left.classList.add("left");
+    right.classList.add("right");
+    bottom.classList.add("bottom");
+
+    cardDiv.appendChild(pos);
+    cardDiv.appendChild(top);
+    cardDiv.appendChild(id);
+    cardDiv.appendChild(left);
+    cardDiv.appendChild(right);
+    cardDiv.appendChild(bottom);
+    cellDiv.appendChild(cardDiv);
+    cardDivs.splice(position, 0, cardDiv);
+    console.log(cardDivs);
+  };
+
+  const printDecks = (function () {
+    let playerDeckDiv = document.querySelector(".player-deck");
+    let opponentDeckDiv = document.querySelector(".opponent-deck");
+
+    players.getPlayer().deck.forEach((card) => {
+      let cardDiv = document.createElement("div");
+      let pos = document.createElement("div");
+      let top = document.createElement("div");
+      let id = document.createElement("div");
+      let left = document.createElement("div");
+      let right = document.createElement("div");
+      let bottom = document.createElement("div");
+
+      pos.textContent = card.position;
+      top.textContent = card.top;
+      id.textContent = card.id;
+      left.textContent = card.left;
+      right.textContent = card.right;
+      bottom.textContent = card.bottom;
+
+      cardDiv.classList.add("card");
+      cardDiv.classList.add(card.owner.toLowerCase());
+      pos.classList.add("position");
+      top.classList.add("top");
+      id.classList.add("id");
+      left.classList.add("left");
+      right.classList.add("right");
+      bottom.classList.add("bottom");
+
+      cardDiv.appendChild(pos);
+      cardDiv.appendChild(top);
+      cardDiv.appendChild(id);
+      cardDiv.appendChild(left);
+      cardDiv.appendChild(right);
+      cardDiv.appendChild(bottom);
+      playerDeckDiv.appendChild(cardDiv);
+      eventHandler.addEventToDeck(cardDiv);
+    });
+
+    players.getOpponent().deck.forEach((card) => {
+      let cardDiv = document.createElement("div");
+      let pos = document.createElement("div");
+      let top = document.createElement("div");
+      let id = document.createElement("div");
+      let left = document.createElement("div");
+      let right = document.createElement("div");
+      let bottom = document.createElement("div");
+
+      pos.textContent = card.position;
+      top.textContent = card.top;
+      id.textContent = card.id;
+      left.textContent = card.left;
+      right.textContent = card.right;
+      bottom.textContent = card.bottom;
+
+      cardDiv.classList.add("card");
+      cardDiv.classList.add(card.owner.toLowerCase());
+      pos.classList.add("position");
+      top.classList.add("top");
+      id.classList.add("id");
+      left.classList.add("left");
+      right.classList.add("right");
+      bottom.classList.add("bottom");
+
+      cardDiv.appendChild(pos);
+      cardDiv.appendChild(top);
+      cardDiv.appendChild(id);
+      cardDiv.appendChild(left);
+      cardDiv.appendChild(right);
+      cardDiv.appendChild(bottom);
+      opponentDeckDiv.appendChild(cardDiv);
+      eventHandler.addEventToDeck(cardDiv);
+    });
+  })();
+
+  return { printCard, cardDivs };
 })();
