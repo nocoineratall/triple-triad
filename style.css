@@ -7,6 +7,8 @@
 body {
   background-color: slategray;
   font-size: 30px;
+
+  display: flex;
 }
 
 .gameboard {
@@ -22,7 +24,7 @@ body {
   border: 2px solid black;
 }
 
-.gameboard .card {
+.gameboard > .card {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
@@ -80,4 +82,21 @@ body {
 
 .cell > .opponent {
   background-color: rgb(255, 216, 216);
+}
+
+.player-deck {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-deck > .card,
+.opponent-deck > .card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+
+  height: 100px;
+  width: 100px;
+  font-size: 1.5rem;
+  border: 2px solid black;
 }
