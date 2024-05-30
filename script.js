@@ -1,3 +1,6 @@
+// Colore delle carte assegnato erroneamente
+// verifica - incapace!
+
 const gameboard = (function () {
   let board = [];
   const rows = 3;
@@ -113,132 +116,209 @@ const game = (function () {
     DOM.printCard(card, position);
   }
 
-  function getDefendersCell(positionIndex) {
-    let row = Math.floor(positionIndex / 3);
-    let column = positionIndex % 3;
+  function getDefendersCell(position) {
+    let row = Math.floor(position / 3);
+    let column = position % 3;
     defenders = [];
 
     // need to implement condition to avoid getting friendly card
     // FIX!!
 
-    switch (positionIndex) {
+    switch (position) {
       case 0:
-        if (isOccupied(row, column + 1)) {
+        if (
+          isOccupied(row, column + 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column + 1]);
         }
-        if (isOccupied(row + 1, column)) {
+        if (
+          isOccupied(row + 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row + 1][column]);
         }
         break;
 
       case 1:
-        if (isOccupied(row, column + 1)) {
+        if (
+          isOccupied(row, column + 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column + 1]);
         }
-        if (isOccupied(row + 1, column)) {
+        if (
+          isOccupied(row + 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row + 1][column]);
         }
-        if (isOccupied(row, column - 1)) {
+        if (
+          isOccupied(row, column - 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column - 1]);
         }
         break;
 
       case 2:
-        if (isOccupied(row + 1, column)) {
+        if (
+          isOccupied(row + 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row + 1][column]);
         }
-        if (isOccupied(row, column - 1)) {
+        if (
+          isOccupied(row, column - 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column - 1]);
         }
         break;
 
       case 3:
-        if (isOccupied(row - 1, column)) {
+        if (
+          isOccupied(row - 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row - 1][column]);
         }
-        if (isOccupied(row, column + 1)) {
+        if (
+          isOccupied(row, column + 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column + 1]);
         }
-        if (isOccupied(row + 1, column)) {
+        if (
+          isOccupied(row + 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row + 1][column]);
         }
         break;
 
       case 4:
-        if (isOccupied(row - 1, column)) {
+        if (
+          isOccupied(row - 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row - 1][column]);
         }
-        if (isOccupied(row, column + 1)) {
+        if (
+          isOccupied(row, column + 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column + 1]);
         }
-        if (isOccupied(row + 1, column)) {
+        if (
+          isOccupied(row + 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row + 1][column]);
         }
-        if (isOccupied(row, column - 1)) {
+        if (
+          isOccupied(row, column - 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column - 1]);
         }
         break;
 
       case 5:
-        if (isOccupied(row - 1, column)) {
+        if (
+          isOccupied(row - 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row - 1][column]);
         }
-        if (isOccupied(row + 1, column)) {
+        if (
+          isOccupied(row + 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row + 1][column]);
         }
-        if (isOccupied(row, column - 1)) {
+        if (
+          isOccupied(row, column - 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column - 1]);
         }
         break;
 
       case 6:
-        if (isOccupied(row - 1, column)) {
+        if (
+          isOccupied(row - 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row - 1][column]);
         }
-        if (isOccupied(row, column + 1)) {
+        if (
+          isOccupied(row, column + 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column + 1]);
         }
         break;
 
       case 7:
-        if (isOccupied(row - 1, column)) {
+        if (
+          isOccupied(row - 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row - 1][column]);
         }
-        if (isOccupied(row, column + 1)) {
+        if (
+          isOccupied(row, column + 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column + 1]);
         }
-        if (isOccupied(row, column - 1)) {
+        if (
+          isOccupied(row, column - 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column - 1]);
         }
         break;
 
       case 8:
-        if (isOccupied(row - 1, column)) {
+        if (
+          isOccupied(row - 1, column) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row - 1][column]);
         }
-        if (isOccupied(row, column - 1)) {
+        if (
+          isOccupied(row, column - 1) &&
+          board[row][column].card.owner != activePlayer.name.toLocaleLowerCase()
+        ) {
           defenders.push(board[row][column - 1]);
         }
 
         break;
     }
 
+    console.log("Defenders List");
+    console.log(defenders);
     return defenders;
   }
 
-  //riscrivere affinchè cardIndex sia recuperato dall'elemento del DOM cliccato
-  const getAttacker = function () {
-    let cardIndex = prompt("Select Attacker card: 0 - 4");
-    attacker =
-      activePlayer == players.getPlayer()
-        ? deck.decks[0][cardIndex]
-        : deck.decks[1][cardIndex];
+  const getAttacker = function (cardIndex) {
+    if (activePlayer == players.getPlayer()) {
+      attacker = activePlayer.deck[cardIndex];
+    }
+    if (activePlayer == players.getOpponent()) {
+      // needs to -5 as card index is from 0 to 8 qhile cards in deck are indexed from 0 to 4
+      attacker = activePlayer.deck[cardIndex - 5];
+    }
     console.log("Attacker set to: ", attacker);
   };
 
-  const selectBattleCell = function () {
-    let row = prompt("Select Row (0 - 2)");
-    let column = prompt("Select Column (0 - 2)");
+  const selectBattleCell = function (cell) {
+    let row = Math.floor(cell.classList[0].substring(9) / 3);
+    let column = cell.classList[0].substring(9) % 3;
+
+    console.log(cell.classList[0].substring(9), row, column);
 
     if (!isOccupied(row, column)) {
       battleCell = board[row][column];
@@ -248,19 +328,20 @@ const game = (function () {
     }
   };
 
-  // implement function in playBattle
   function setCardColor(card, position) {
     if (card.owner == players.getPlayer().name) {
+      console.log("Setting color of card ", card, "in position ", position);
       DOM.cardDivs[position].setAttribute("class", "card player");
     }
     if (card.owner == players.getOpponent().name) {
+      console.log("Setting color of card ", card, "in position ", position);
+      console.log("CardDiv = ", DOM.cardDivs);
       DOM.cardDivs[position].setAttribute("class", "card opponent");
     }
   }
 
-  const playBattle = function () {
-    getAttacker();
-    selectBattleCell();
+  const playBattle = function (cell) {
+    selectBattleCell(cell);
     placeCard(attacker, battleCell.position);
     getDefendersCell(battleCell.position);
 
@@ -320,14 +401,25 @@ const game = (function () {
 
 const eventHandler = (function () {
   function addEventToDeck(element) {
-    element.addEventListener("click", game.getAttacker);
+    element.addEventListener("click", () => {
+      // the number 2 is the children div with clas 'id' with value 'innerHTML'
+      game.getAttacker(element.children[2].innerHTML);
+      console.log(element.children[2].innerHTML);
+    });
   }
 
-  return { addEventToDeck };
+  function addEventToCell(element) {
+    element.addEventListener("click", () => {
+      game.playBattle(element);
+    });
+  }
+
+  return { addEventToDeck, addEventToCell };
 })();
 
 const DOM = (function () {
   const cardDivs = [, , , , , , , ,];
+  const cellDivs = document.querySelectorAll(".cell");
 
   const printCard = function (card, position) {
     let r = gameboard.positionTo2D(position).row;
@@ -365,7 +457,7 @@ const DOM = (function () {
     cardDiv.appendChild(right);
     cardDiv.appendChild(bottom);
     cellDiv.appendChild(cardDiv);
-    cardDivs.splice(position, 0, cardDiv);
+    cardDivs.splice(position, 1, cardDiv); //1 element at index 'position' is replaced with 'cardDiv'
     console.log(cardDivs);
   };
 
@@ -441,6 +533,13 @@ const DOM = (function () {
       cardDiv.appendChild(bottom);
       opponentDeckDiv.appendChild(cardDiv);
       eventHandler.addEventToDeck(cardDiv);
+    });
+  })();
+
+  // set event to playTurn on gameboard Cells
+  const assignPlayBattle = (function () {
+    cellDivs.forEach((cellDiv) => {
+      eventHandler.addEventToCell(cellDiv);
     });
   })();
 
