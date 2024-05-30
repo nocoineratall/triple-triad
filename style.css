@@ -24,7 +24,7 @@ body {
   border: 2px solid black;
 }
 
-.gameboard > .card {
+.gameboard .card {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
