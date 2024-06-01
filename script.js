@@ -94,7 +94,7 @@ const deck = (function () {
   };
   initDecks();
 
-  return { decks };
+  return { decks, initDecks };
 })();
 
 const game = (function () {
@@ -111,9 +111,11 @@ const game = (function () {
   function placeCard(card, position) {
     let row = Math.floor(position / 3);
     let column = position % 3;
-    board[row][column].card = card;
 
-    DOM.printCard(card, position);
+    if (isOccupied(row, column) != true) {
+      board[row][column].card = card;
+      DOM.printCard(card, position);
+    }
   }
 
   function getDefendersCell(position) {
@@ -323,8 +325,10 @@ const game = (function () {
     if (!isOccupied(row, column)) {
       battleCell = board[row][column];
       console.log("Battle Cell set to: ", battleCell);
+      return true;
     } else {
       console.log("Position already taken");
+      return false;
     }
   };
 
@@ -351,49 +355,67 @@ const game = (function () {
   }
 
   const playBattle = function (cell) {
-    selectBattleCell(cell);
-    placeCard(attacker, battleCell.position);
-    getDefendersCell(battleCell.position);
+    if (selectBattleCell(cell)) {
+      placeCard(attacker, battleCell.position);
+      getDefendersCell(battleCell.position);
 
-    let attackerPosition = battleCell.position;
-    defenders.forEach((defenderCell) => {
-      let defender = defenderCell.card;
+      let attackerPosition = battleCell.position;
+      defenders.forEach((defenderCell) => {
+        let defender = defenderCell.card;
 
-      switch (defenderCell.position) {
-        case attackerPosition - 3:
-          console.log("Fight TOP");
-          if (attacker.top > defender.bottom) {
-            defender.owner = activePlayer.name;
-            console.log("Fight won against TOP");
-          }
-          break;
-        case attackerPosition + 1:
-          console.log("Fight RIGHT");
-          if (attacker.right > defender.left) {
-            defender.owner = activePlayer.name;
-            console.log("Fight won against RIGHT");
-          }
-          break;
-        case attackerPosition + 3:
-          console.log("Fight BOTTOM");
-          if (attacker.bottom > defender.top) {
-            defender.owner = activePlayer.name;
-            console.log("Fight won against BOTTOM");
-          }
-          break;
-        case attackerPosition - 1:
-          console.log("Fight LEFT");
-          if (attacker.left > defender.right) {
-            defender.owner = activePlayer.name;
-            console.log("Fight won against LEFT");
-          }
-          break;
+        switch (defenderCell.position) {
+          case attackerPosition - 3:
+            console.log("Fight TOP");
+            if (attacker.top > defender.bottom) {
+              defender.owner = activePlayer.name;
+              console.log("Fight won against TOP");
+            }
+            break;
+          case attackerPosition + 1:
+            console.log("Fight RIGHT");
+            if (attacker.right > defender.left) {
+              defender.owner = activePlayer.name;
+              console.log("Fight won against RIGHT");
+            }
+            break;
+          case attackerPosition + 3:
+            console.log("Fight BOTTOM");
+            if (attacker.bottom > defender.top) {
+              defender.owner = activePlayer.name;
+              console.log("Fight won against BOTTOM");
+            }
+            break;
+          case attackerPosition - 1:
+            console.log("Fight LEFT");
+            if (attacker.left > defender.right) {
+              defender.owner = activePlayer.name;
+              console.log("Fight won against LEFT");
+            }
+            break;
+        }
+        setCardColor(defender, defenderCell.position);
+      });
+      DOM.removeCardFromHand(attacker.id);
+      if (checkEnd()) {
+        // invoke function to print reset
+        DOM.printReset();
       }
-      setCardColor(defender, defenderCell.position);
-    });
-    DOM.removeCardFromHand(attacker.id);
-    attacker = null;
-    activePlayer = players.toggleActivePlayer();
+      attacker = null;
+      activePlayer = players.toggleActivePlayer();
+    }
+  };
+
+  const checkEnd = function () {
+    let counter = 0;
+
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (board[i][j].card != null) {
+          counter++;
+        }
+      }
+    }
+    return counter == 9;
   };
 
   return {
@@ -425,7 +447,16 @@ const eventHandler = (function () {
     });
   }
 
-  return { addEventToDeck, addEventToCell };
+  function addEventToReset(element) {
+    element.addEventListener("click", () => {
+      gameboard.initBoard();
+      deck.initDecks();
+      DOM.printDecks();
+      DOM.emptyBoard();
+    });
+  }
+
+  return { addEventToDeck, addEventToCell, addEventToReset };
 })();
 
 const DOM = (function () {
@@ -433,6 +464,8 @@ const DOM = (function () {
   const cellDivs = document.querySelectorAll(".cell");
   const playerDeckDiv = document.querySelector(".player-deck");
   const opponentDeckDiv = document.querySelector(".opponent-deck");
+  const scorePanelDiv = document.querySelector(".score-panel");
+  const gameboardDiv = document.querySelector(".gameboard");
 
   const removeCardFromHand = function (handIndex) {
     // playerDeckDiv and opponentDeckDiv have dynamic length that changes everytime an element is removed
@@ -498,10 +531,7 @@ const DOM = (function () {
     console.log(cardDivs);
   };
 
-  const printDecks = (function () {
-    let playerHandDivs = [];
-    let opponentHandDivs = [];
-
+  const printDecks = function () {
     players.getPlayer().deck.forEach((card) => {
       let cardDiv = document.createElement("div");
       let pos = document.createElement("div");
@@ -571,7 +601,26 @@ const DOM = (function () {
       opponentDeckDiv.appendChild(cardDiv);
       eventHandler.addEventToDeck(cardDiv);
     });
-  })();
+  };
+  printDecks();
+
+  const emptyBoard = function () {
+    for (let i = 0; i < gameboardDiv.children.length; i++) {
+      while (gameboardDiv.children[i].firstChild) {
+        gameboardDiv.children[i].removeChild(
+          gameboardDiv.children[i].firstChild
+        );
+      }
+    }
+  };
+
+  //function to print Reset Button
+  const printReset = function () {
+    const resetButton = document.createElement("button");
+    resetButton.textContent = "Start New Game";
+    scorePanelDiv.appendChild(resetButton);
+    eventHandler.addEventToReset(resetButton);
+  };
 
   // set event to playTurn on gameboard Cells
   const assignPlayBattle = (function () {
@@ -580,5 +629,12 @@ const DOM = (function () {
     });
   })();
 
-  return { printCard, removeCardFromHand, cardDivs };
+  return {
+    printCard,
+    removeCardFromHand,
+    printReset,
+    printDecks,
+    emptyBoard,
+    cardDivs,
+  };
 })();
