@@ -1,6 +1,3 @@
-// Colore delle carte assegnato erroneamente
-// verifica - incapace!
-
 const gameboard = (function () {
   let board = [];
   const rows = 3;
@@ -52,6 +49,7 @@ const players = (function () {
 
   const toggleActivePlayer = function () {
     activePlayer = activePlayer == player ? opponent : player;
+    // --->>  set the dom to display active player
     return activePlayer;
   };
 
@@ -70,12 +68,13 @@ const deck = (function () {
 
   function setStat() {
     // sets a random number from 1 to 10
-    let stat = Math.floor(Math.random() * 11) % 11;
+    let stat = Math.floor(Math.random() * 10) % 11;
     return stat == 0 ? 1 : stat;
   }
 
   const initDecks = function () {
     for (let i = 0; i < decks.length; i++) {
+      decks[i] = [];
       for (let j = 0; j < deckSize; j++) {
         const card = {
           id: deckSize * i + j, //sets a progressive number from 0 (0, 1, 2, ...)
@@ -88,13 +87,13 @@ const deck = (function () {
         decks[i].push(card);
       }
     }
-    players.getPlayer().deck = playerDeck;
-    players.getOpponent().deck = opponentDeck;
+    players.getPlayer().deck = decks[0];
+    players.getOpponent().deck = decks[1];
     console.log("Decks intialized");
   };
   initDecks();
 
-  return { decks, initDecks };
+  return { decks, playerDeck, opponentDeck, initDecks };
 })();
 
 const game = (function () {
@@ -105,6 +104,7 @@ const game = (function () {
   let defenders = [];
 
   function isOccupied(row, column) {
+    board = gameboard.getBoard();
     return board[row][column].card != null;
   }
 
@@ -397,8 +397,8 @@ const game = (function () {
       });
       DOM.removeCardFromHand(attacker.id);
       if (checkEnd()) {
-        // invoke function to print reset
-        DOM.printReset();
+        // invoke function to print or remove reset
+        DOM.toggleReset();
       }
       attacker = null;
       activePlayer = players.toggleActivePlayer();
@@ -449,10 +449,12 @@ const eventHandler = (function () {
 
   function addEventToReset(element) {
     element.addEventListener("click", () => {
+      DOM.clearHands();
       gameboard.initBoard();
       deck.initDecks();
       DOM.printDecks();
       DOM.emptyBoard();
+      DOM.toggleReset();
     });
   }
 
@@ -488,6 +490,15 @@ const DOM = (function () {
         }
       }
       opponentDeckDiv.removeChild(cardToRemove);
+    }
+  };
+
+  const clearHands = function () {
+    while (playerDeckDiv.firstChild) {
+      playerDeckDiv.removeChild(playerDeckDiv.firstChild);
+    }
+    while (opponentDeckDiv.firstChild) {
+      opponentDeckDiv.removeChild(opponentDeckDiv.firstChild);
     }
   };
 
@@ -615,11 +626,15 @@ const DOM = (function () {
   };
 
   //function to print Reset Button
-  const printReset = function () {
-    const resetButton = document.createElement("button");
-    resetButton.textContent = "Start New Game";
-    scorePanelDiv.appendChild(resetButton);
-    eventHandler.addEventToReset(resetButton);
+  const toggleReset = function () {
+    if (!scorePanelDiv.firstChild) {
+      const resetButton = document.createElement("button");
+      resetButton.textContent = "Start New Game";
+      scorePanelDiv.appendChild(resetButton);
+      eventHandler.addEventToReset(resetButton);
+    } else {
+      scorePanelDiv.removeChild(scorePanelDiv.firstChild);
+    }
   };
 
   // set event to playTurn on gameboard Cells
@@ -632,9 +647,10 @@ const DOM = (function () {
   return {
     printCard,
     removeCardFromHand,
-    printReset,
+    toggleReset,
     printDecks,
     emptyBoard,
+    clearHands,
     cardDivs,
   };
 })();
