@@ -37,12 +37,12 @@ const gameboard = (function () {
 const players = (function () {
   const player = {
     name: "Player",
-    score: 5, // represents the number of cards owned at anytime
+    score: 0, // represents the number of cards owned at anytime
   };
 
   const opponent = {
     name: "Opponent",
-    score: 5,
+    score: 0,
   };
 
   let activePlayer = player;
@@ -50,6 +50,7 @@ const players = (function () {
   const toggleActivePlayer = function () {
     activePlayer = activePlayer == player ? opponent : player;
     // --->>  set the dom to display active player
+    DOM.printActivePlayer();
     return activePlayer;
   };
 
@@ -395,15 +396,37 @@ const game = (function () {
         }
         setCardColor(defender, defenderCell.position);
       });
+      checkScore();
+      DOM.printScore();
       DOM.removeCardFromHand(attacker.id);
+      attacker = null;
+      activePlayer = players.toggleActivePlayer();
+
       if (checkEnd()) {
+        console.log("im here");
         // invoke function to print or remove reset
         DOM.toggleReset();
       }
-      attacker = null;
-      activePlayer = players.toggleActivePlayer();
     }
   };
+
+  const checkScore = function () {
+    let allCards = players.getPlayer().deck.concat(players.getOpponent().deck); //simple way to put all cards in an array
+    players.getPlayer().score = 0;
+    players.getOpponent().score = 0;
+
+    allCards.forEach((card) => {
+      if (card.owner == players.getPlayer().name) {
+        players.getPlayer().score++;
+      }
+      if (card.owner == players.getOpponent().name) {
+        players.getOpponent().score++;
+      }
+    });
+
+    console.log(players.getPlayer().score, players.getOpponent().score);
+  };
+  checkScore();
 
   const checkEnd = function () {
     let counter = 0;
@@ -426,6 +449,7 @@ const game = (function () {
     selectBattleCell,
     placeCard,
     setCardColor,
+    checkScore,
     activePlayer,
     battleCell,
     defenders,
@@ -435,9 +459,14 @@ const game = (function () {
 const eventHandler = (function () {
   function addEventToDeck(element) {
     element.addEventListener("click", () => {
-      // the number 2 is the children div with class 'id' with value 'innerHTML'
-      game.getAttacker(element.children[2].innerHTML);
-      console.log(element.children[2].innerHTML);
+      game.getAttacker(element.children[2].innerHTML); // the number 2 is the children div with class 'id' with value 'innerHTML'
+
+      //adds 'selected' class to clicked card and removes said class to other cards
+      let cards = document.querySelectorAll(".card");
+      cards.forEach((card) => {
+        card.classList.remove("selected");
+      });
+      element.classList.add("selected");
     });
   }
 
@@ -454,6 +483,8 @@ const eventHandler = (function () {
       deck.initDecks();
       DOM.printDecks();
       DOM.emptyBoard();
+      game.checkScore();
+      DOM.printScore();
       DOM.toggleReset();
     });
   }
@@ -466,8 +497,28 @@ const DOM = (function () {
   const cellDivs = document.querySelectorAll(".cell");
   const playerDeckDiv = document.querySelector(".player-deck");
   const opponentDeckDiv = document.querySelector(".opponent-deck");
-  const scorePanelDiv = document.querySelector(".score-panel");
+  const resetContainer = document.querySelector(".reset-container");
   const gameboardDiv = document.querySelector(".gameboard");
+  const playerScoreDiv = document.querySelector(".player-score");
+  const opponentScoreDiv = document.querySelector(".opponent-score");
+  const activePlayerContainer = document.querySelector(
+    ".active-player-container"
+  );
+
+  const printScore = function () {
+    playerScoreDiv.textContent = players.getPlayer().score;
+    opponentScoreDiv.textContent = players.getOpponent().score;
+  };
+  printScore();
+
+  const printActivePlayer = function () {
+    activePlayerContainer.textContent = `It's ${
+      players.getActivePlayer().name
+    }'s turn`;
+    activePlayerContainer.className =
+      players.getActivePlayer().name.toLowerCase() + "-turn";
+  };
+  printActivePlayer();
 
   const removeCardFromHand = function (handIndex) {
     // playerDeckDiv and opponentDeckDiv have dynamic length that changes everytime an element is removed
@@ -627,13 +678,15 @@ const DOM = (function () {
 
   //function to print Reset Button
   const toggleReset = function () {
-    if (!scorePanelDiv.firstChild) {
+    console.log(!resetContainer.firstChild);
+    if (!resetContainer.firstChild) {
       const resetButton = document.createElement("button");
       resetButton.textContent = "Start New Game";
-      scorePanelDiv.appendChild(resetButton);
+      resetButton.classList.add("reset-button");
+      resetContainer.appendChild(resetButton);
       eventHandler.addEventToReset(resetButton);
     } else {
-      scorePanelDiv.removeChild(scorePanelDiv.firstChild);
+      resetContainer.removeChild(resetContainer.firstChild);
     }
   };
 
@@ -646,6 +699,8 @@ const DOM = (function () {
 
   return {
     printCard,
+    printScore,
+    printActivePlayer,
     removeCardFromHand,
     toggleReset,
     printDecks,
