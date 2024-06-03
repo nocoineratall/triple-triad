@@ -1,3 +1,13 @@
+:root {
+  --player-bg-color: rgb(202, 252, 235);
+  --opponent-bg-color: rgb(255, 216, 216);
+  --body-bg-color: rgb(15, 15, 15);
+  --padding-small: 10px;
+  --padding-medium: 30px;
+  --card-width: 120px;
+  --gameboard-bg-color: rgb(206, 171, 83);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,10 +15,81 @@
 }
 
 body {
-  background-color: slategray;
+  background-color: var(--body-bg-color);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-size: 30px;
 
   display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 4rem;
+  letter-spacing: 10px;
+  color: aliceblue;
+  padding: var(--padding-small);
+}
+
+.player-turn,
+.opponent-turn {
+  border-radius: 20px;
+  padding: var(--padding-small) var(--padding-medium);
+  margin: var(--padding-small);
+}
+
+.player-turn {
+  background-color: var(--player-bg-color);
+}
+
+.opponent-turn {
+  background-color: var(--opponent-bg-color);
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+}
+
+.score-panel {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  width: 900px;
+  font-size: 5rem;
+  color: aliceblue;
+}
+
+.opponent-score {
+  grid-column-start: 1;
+  grid-column-end: 2;
+}
+
+.reset-container {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.reset-container > button {
+  background-color: aquamarine;
+  font-family: inherit;
+  border-radius: 10px;
+  padding: 10px 60px;
+}
+
+.player-score {
+  grid-column-start: 3;
+  grid-column-end: 4;
+}
+
+.player-score,
+.opponent-score {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .gameboard {
@@ -16,12 +97,16 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   width: 600px;
-  height: 600px;
-  border: 2px solid black;
+  height: 606px; /* equivalent to 600px + 6 borders * 2px thick */
 }
 
 .gameboard > .cell {
-  border: 2px solid black;
+  border: 1px solid var(--body-bg-color);
+  background-color: var(--gameboard-bg-color);
+}
+
+.gameboard > .cell:hover {
+  scale: 1.05;
 }
 
 .gameboard .card {
@@ -31,6 +116,10 @@ body {
 
   height: 200px;
   font-size: 3rem;
+}
+
+.card.selected {
+  background-color: var(--player-bg-color);
 }
 
 .card > div {
@@ -76,17 +165,28 @@ body {
   grid-column-end: 3;
 }
 
-.cell > .player {
-  background-color: rgb(202, 252, 235);
+.cell > .player,
+.player-deck > .card {
+  background-color: var(--player-bg-color);
 }
 
-.cell > .opponent {
-  background-color: rgb(255, 216, 216);
+.cell > .opponent,
+.opponent-deck > .card {
+  background-color: var(--opponent-bg-color);
+}
+
+.player-deck,
+.opponent-deck {
+  display: flex;
+  flex-direction: column;
+
+  width: 150px;
+  gap: 10px;
+  padding-inline: 20px;
 }
 
 .player-deck {
-  display: flex;
-  flex-direction: column;
+  align-items: flex-end;
 }
 
 .player-deck > .card,
@@ -95,8 +195,13 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
 
-  height: 100px;
-  width: 100px;
+  height: var(--card-width);
+  width: var(--card-width);
   font-size: 1.5rem;
-  border: 2px solid black;
+  border: 1px solid black;
+}
+
+.player-deck > .card:hover,
+.opponent-deck > .card:hover {
+  scale: 1.1;
 }
