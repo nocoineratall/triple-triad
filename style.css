@@ -1,11 +1,11 @@
 :root {
-  --player-bg-color: rgb(202, 252, 235);
-  --opponent-bg-color: rgb(255, 216, 216);
+  --player-bg-color: rgb(166, 215, 255);
+  --opponent-bg-color: rgb(216, 255, 224);
   --body-bg-color: rgb(15, 15, 15);
   --padding-small: 10px;
   --padding-medium: 30px;
   --card-width: 120px;
-  --gameboard-bg-color: rgb(206, 171, 83);
+  --gameboard-bg-color: rgb(254, 255, 206);
 }
 
 * {
@@ -28,14 +28,15 @@ body {
 .title {
   font-size: 4rem;
   letter-spacing: 10px;
-  color: aliceblue;
+  color: whitesmoke;
   padding: var(--padding-small);
 }
 
 .player-turn,
 .opponent-turn {
+  font-size: 1.5rem;
   border-radius: 20px;
-  padding: var(--padding-small) var(--padding-medium);
+  padding: 10px 60px;
   margin: var(--padding-small);
 }
 
@@ -97,7 +98,7 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   width: 600px;
-  height: 606px; /* equivalent to 600px + 6 borders * 2px thick */
+  height: 606px; /* equivalent to 600px + 6 borders * 1px thick */
 }
 
 .gameboard > .cell {
@@ -181,7 +182,7 @@ body {
   flex-direction: column;
 
   width: 150px;
-  gap: 10px;
+  gap: 5px;
   padding-inline: 20px;
 }
 
